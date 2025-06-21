@@ -1,0 +1,1 @@
+# twrp_device_samsung_gtel3g
