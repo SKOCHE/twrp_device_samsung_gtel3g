@@ -1,0 +1,1 @@
+add_lunch_combo twrp_gtel3g-userdebug
