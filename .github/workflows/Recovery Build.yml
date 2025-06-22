@@ -49,7 +49,7 @@ jobs:
     permissions:
       contents: write
     steps:
-    - name: 🖥️ Display Run Parameters
+    - name: Display Run Parameters
       run: |
         echo "::group::User Environment Variables"
         echo "Manifest URL: ${{ github.event.inputs.MANIFEST_URL }}"
@@ -62,11 +62,13 @@ jobs:
         echo "Build Target: ${{ github.event.inputs.BUILD_TARGET }}.img"
         echo "::endgroup::"
 
-    - name: ✨ Check Out
+    # You might want to Checkout your repo first, but not mandatory
+    - name: Check Out
       uses: actions/checkout@v3
-
-    - name: ➕ Cleanup
+    # Cleanup The Actions Workspace Using Custom Composite Run Actions
+    - name: Cleanup
       uses: rokibhasansagar/slimhub_actions@main
+      # That's it! Now use your normal steps
 
     - name: 🔧 Prepare the environment
       run: |
@@ -128,79 +130,75 @@ jobs:
       run: |
           if [ ! -e /lib/x86_64-linux-gnu/libtinfo.so.5 ]; then sudo ln -s /lib/x86_64-linux-gnu/libtinfo.so.6 /lib/x86_64-linux-gnu/libtinfo.so.5; fi
 
-    - name: 🐘 Install OpenJDK
-      uses: actions/setup-java@v3
+    - name: Setup SSH Keys
+      if: ${{ startsWith(github.event.inputs.MANIFEST_URL, 'git@github.com') }}
+      uses: webfactory/ssh-agent@v0.5.4
       with:
-          distribution: 'zulu'
-          java-version: '8'
-
-    - name: 🔑 Setup SSH Keys
-      if: ${{ startsWith(github.event.inputs.MANIFEST_URL, 'git@github.com') || startsWith(github.event.inputs.DEVICE_TREE_URL, 'git@github.com') || startsWith(github.event.inputs.COMMON_TREE_URL, 'git@github.com') }}
-      uses: webfactory/ssh-agent@v0.9.0
-      with:
-        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-    - name: 🛠️ Install Repo Tool
+          ssh-private-key: |
+              ${{ secrets.SSH_PRIVATE_KEY }}
+    - name: Install repo
       run: |
-          mkdir ~/bin
-          curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
-          chmod a+x ~/bin/repo
-          sudo ln -sf ~/bin/repo /usr/bin/repo
-
-    - name: 🆕 Initialize Repo
-      id: init
+        mkdir ~/bin
+        curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
+        chmod a+x ~/bin/repo
+        sudo ln -sf ~/bin/repo /usr/bin/repo
+      
+    - name: Initialize repo
       run: |
-          mkdir workspace
-          cd workspace
-          echo "workspace-folder=$(pwd)" >> $GITHUB_OUTPUT
-          git config --global user.name "Nico170420"
-          git config --global user.email "b170420nc@gmail.com"
-          repo init --depth=1 -u "${{ github.event.inputs.MANIFEST_URL }}" -b "${{ github.event.inputs.MANIFEST_BRANCH }}"
-
-    - name: 🛢️ Repo Sync
+        mkdir workspace
+        cd workspace
+        echo "workspace-folder=$(pwd)" >> $GITHUB_OUTPUT
+        git config --global user.name "Nico170420"
+        git config --global user.email "b170420nc@gmail.com"
+        repo init --depth=1 -u ${{ github.event.inputs.MANIFEST_URL }} -b ${{ github.event.inputs.MANIFEST_BRANCH }}
+      id: pwd
+          
+    - name: Repo Sync
       run: |
-          cd workspace
-          repo sync -j$(nproc --all) --force-sync
-
-    - name: 🔍 Clone Device Tree
-      run: |
-          git clone --depth=1 "${{ github.event.inputs.DEVICE_TREE_URL }}" -b "${{ github.event.inputs.DEVICE_TREE_BRANCH }}" "./${{ github.event.inputs.DEVICE_PATH }}"
+        repo sync -j$(nproc --all) --force-sync
       working-directory: workspace
 
-    - name: 🧩 Clone Common Tree
-      if: ${{ github.event.inputs.COMMON_TREE_URL != '' && github.event.inputs.COMMON_PATH != '' }}
+    - name: Clone device tree
       run: |
-          git clone --depth=1 "${{ github.event.inputs.COMMON_TREE_URL }}" -b "${{ github.event.inputs.DEVICE_TREE_BRANCH }}" "./${{ github.event.inputs.COMMON_PATH }}"
-      working-directory: workspace
+        git clone ${{ github.event.inputs.DEVICE_TREE_URL }} -b ${{ github.event.inputs.DEVICE_TREE_BRANCH }} ./${{ github.event.inputs.DEVICE_PATH }}
+      working-directory: ${{ steps.pwd.outputs.workspace-folder }}
 
-    - name: 📋 Check Build Type
-      id: buildtype
+    - name: Clone common tree
+      if: |
+        github.event.inputs.COMMON_TREE_URL != null
+        && github.event.inputs.COMMON_PATH != null
       run: |
-          if [[ "${{ github.event.inputs.MANIFEST_BRANCH }}" == "twrp-11" || "${{ github.event.inputs.MANIFEST_BRANCH }}" == "twrp-12.1" ]]; then
-            echo "type=twrp" >> $GITHUB_OUTPUT
-          else
-            echo "type=omni" >> $GITHUB_OUTPUT
-          fi
+        git clone ${{ github.event.inputs.COMMON_TREE_URL }} -b ${{ github.event.inputs.DEVICE_TREE_BRANCH }} ./${{ github.event.inputs.COMMON_PATH }}
+      working-directory: ${{ steps.pwd.outputs.workspace-folder }}
 
-    - name: 🔍 Sync Additional Dependencies
+    - name: Check Build Tree
+      uses: haya14busa/action-cond@v1
+      id: buildtree
+      with:
+        cond: ${{ github.event.inputs.MANIFEST_BRANCH == 'twrp-11' || github.event.inputs.MANIFEST_BRANCH == 'twrp-12.1' }}
+        if_true: twrp
+        if_false: omni
+
+    - name: Sync Device Dependencies
       run: |
         bash ${GITHUB_WORKSPACE}/scripts/convert.sh ${{ github.event.inputs.DEVICE_PATH }}/${{ steps.buildtree.outputs.value }}.dependencies
         repo sync -j$(nproc --all)
       working-directory: ${{ steps.pwd.outputs.workspace-folder }}
       continue-on-error: true
-    - name: 🧽 Set Swap Space
+
+    - name: Set Swap Space
       uses: pierotofy/set-swap-space@master
       with:
-          swap-size-gb: 16
+        swap-size-gb: 12
 
-    - name: 🛠️ Building recovery
+    - name: Building recovery
       run: |
         source build/envsetup.sh
         export ALLOW_MISSING_DEPENDENCIES=true
         lunch ${{ github.event.inputs.MAKEFILE_NAME }}-eng && make clean && make ${{ github.event.inputs.BUILD_TARGET }}image -j$(nproc --all)
       working-directory: ${{ steps.pwd.outputs.workspace-folder }}
 
-    - name: 🔗 Upload to Release
+    - name: Upload to Release
       uses: softprops/action-gh-release@v1
       with:
         files: workspace/out/target/product/${{ github.event.inputs.DEVICE_NAME }}/${{ github.event.inputs.BUILD_TARGET }}.img
