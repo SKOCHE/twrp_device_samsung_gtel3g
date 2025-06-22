@@ -22,20 +22,12 @@
 # Inherit from those products. Most specific first.
 $(call inherit-product, $(SRC_TARGET_DIR)/product/aosp_base.mk)
 
-# Тема TWRP
-PRODUCT_PROPERTY_OVERRIDES += \
-    ro.twrp.device_version=SM-T561_by_SK
-
-# Передача предкомпилированных файлов ядра и DTB
-TARGET_PREBUILT_KERNEL := $(LOCAL_PATH)/prebuilt/kernel:kernel
-BOARD_PREBUILT_DT_IMAGE := $(LOCAL_PATH)/prebuilt/dt.img
-
-# Пакеты приложений
+# Product Configuration
 PRODUCT_PACKAGES += \
     charger_res_images \
     charger
 
-# Имя продукта и бренд
+# Название продукта и бренда
 PRODUCT_NAME := twrp_gtel3g
 PRODUCT_DEVICE := gtel3g
 PRODUCT_BRAND := samsung
