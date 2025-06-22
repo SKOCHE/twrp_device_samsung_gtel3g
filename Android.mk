@@ -1,25 +1,22 @@
-# Явное переопределение, если переменные окружения установлены.  
-# Если TARGET_PREBUILT_KERNEL существует, используем его значение, иначе остается пустая строка.
-KERNEL_SRC := $(strip $(TARGET_PREBUILT_KERNEL))
-DTB_SRC := $(strip $(BOARD_PREBUILT_DT_IMAGE))
+#
+# Copyright (C) 2020 The Android Open Source Project
+# Copyright (C) 2021-2022 TeamWin Recovery Project
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
 
+LOCAL_PATH := $(call my-dir)
 
-# Проверка, что исходные файлы ядра и DTB существуют.  Если нет - выдаем ошибку
-# stop - это функция make для остановки сборки с сообщением об ошибке.
-ifndef KERNEL_SRC
-$(warning "TARGET_PREBUILT_KERNEL is not defined. Kernel image will not be copied.")
+ifeq ($(TARGET_DEVICE),gtel3g)
+include $(call all-subdir-makefiles,$(LOCAL_PATH))
 endif
-
-ifndef DTB_SRC
-$(warning "BOARD_PREBUILT_DT_IMAGE is not defined. DTB image will not be copied.")
-endif
-
-
-# Правила для копирования ядра и DTB
-$(PRODUCT_OUT)/kernel: $(KERNEL_SRC)
-    @echo "Copying kernel from $(KERNEL_SRC) to $@" # Отладочный вывод
-    $(if $(KERNEL_SRC), cp $(KERNEL_SRC) $@, @echo "Skipping kernel copy: KERNEL_SRC is empty") # Условное копирование
-
-$(PRODUCT_OUT)/dt.img: $(DTB_SRC)
-    @echo "Copying dt.img from $(DTB_SRC) to $@" # Отладочный вывод
-    $(if $(DTB_SRC), cp $(DTB_SRC) $@, @echo "Skipping dtb copy: DTB_SRC is empty") # Условное копирование
