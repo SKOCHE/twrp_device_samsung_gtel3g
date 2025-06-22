@@ -184,11 +184,10 @@ jobs:
 
     - name: 🔍 Sync Additional Dependencies
       run: |
-          bash ${GITHUB_WORKSPACE}/scripts/convert.sh ${{ github.event.inputs.DEVICE_PATH }}/${{ steps.buildtype.outputs.type }}.dependencies
-          repo sync -j$(nproc --all)
+        bash ${GITHUB_WORKSPACE}/scripts/convert.sh ${{ github.event.inputs.DEVICE_PATH }}/${{ steps.buildtree.outputs.value }}.dependencies
+        repo sync -j$(nproc --all)
+      working-directory: ${{ steps.pwd.outputs.workspace-folder }}
       continue-on-error: true
-      working-directory: workspace
-
     - name: 🧽 Set Swap Space
       uses: pierotofy/set-swap-space@master
       with:
@@ -199,7 +198,7 @@ jobs:
         source build/envsetup.sh
         export ALLOW_MISSING_DEPENDENCIES=true
         lunch ${{ github.event.inputs.MAKEFILE_NAME }}-eng && make clean && make ${{ github.event.inputs.BUILD_TARGET }}image -j$(nproc --all)
-      working-directory: ${{ steps.init.outputs.workspace-folder }}
+      working-directory: ${{ steps.pwd.outputs.workspace-folder }}
 
     - name: 🔗 Upload to Release
       uses: softprops/action-gh-release@v1
