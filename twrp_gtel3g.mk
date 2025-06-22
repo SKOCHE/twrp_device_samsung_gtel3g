@@ -27,7 +27,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
     ro.twrp.device_version=SM-T561_by_SK
 
 # Передача предкомпилированных файлов ядра и DTB
-TARGET_PREBUILT_KERNEL := $(LOCAL_PATH)/kernel
+TARGET_PREBUILT_KERNEL := $(LOCAL_PATH)prebuilt/kernel:kernel
 BOARD_PREBUILT_DT_IMAGE := $(LOCAL_PATH)/dt.img
 
 # Пакеты приложений
