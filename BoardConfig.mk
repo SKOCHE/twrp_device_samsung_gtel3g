@@ -1,5 +1,9 @@
 DEVICE_PATH := device/samsung/gtel3g
 
+# Передача предкомпилированных файлов ядра и DTB
+TARGET_PREBUILT_KERNEL := $(LOCAL_PATH)/prebuilt/kernel
+BOARD_PREBUILT_DT_IMAGE := $(LOCAL_PATH)/prebuilt/dt.img
+
 # Архитектура
 TARGET_ARCH := arm
 TARGET_CPU_ABI := armeabi-v7a
@@ -19,35 +23,22 @@ TARGET_BOARD_PLATFORM := sc8830
 # Утверждение OTA обновления
 TARGET_OTA_ASSERT_DEVICE := SM-T561,SM-T560,gtel3g,gtelwifi,gtel3gxx,gtelwifixx,smt561,smt560
 
-# Ядро и DTB
-TARGET_PREBUILT_KERNEL := $(LOCAL_PATH)/prebuilt/kernel:kernel
-BOARD_PREBUILT_DT_IMAGE := $(LOCAL_PATH)/prebuilt/dt.img
-BOARD_KERNEL_CMDLINE := console=ttyS1,115200n8
-BOARD_KERNEL_BASE := 0x00000000
-BOARD_KERNEL_PAGESIZE := 2048
-BOARD_KERNEL_TAGS_OFFSET := 0x00000100
-BOARD_RAMDISK_OFFSET := 0x01000000
-
-# Использование предкомпилированного ядра и DTB
+# Используемые предкомпилированные ресурсы
 TARGET_IGNORE_PREBUILT_KERNEL_CHECKSUM := true
 BOARD_KERNEL_SEPARATED_DT := true
-
-# Форсированное использование предкомпилированного ядра
 TARGET_BUILD_KERNEL_WITHOUT_KERNEL_CONFIG := true
-
-# Гарантированная чистка промежуточных результатов
 INTERNAL_KERNEL_CLEANING := true
 
-# Увеличение размеров блоков flash
+# Размер блока Flash
 BOARD_FLASH_BLOCK_SIZE := 131072
 
-# Recovery
+# Конфигурация RAMdisk и Recovery
 BOARD_HAS_LARGE_FILESYSTEM := true
 TARGET_RECOVERY_PIXEL_FORMAT := RGBX_8888
 TARGET_USERIMAGES_USE_EXT4 := true
 TARGET_USERIMAGES_USE_F2FS := true
 
-# Специфичные флаги TWRP
+# Специфические флаги TWRP
 BOARD_USE_CUSTOM_RECOVERY_FONT := roboto_10x18.h
 RECOVERY_GRAPHICS_USE_LINELENGTH := true
 RECOVERY_SDCARD_ON_DATA := true
@@ -81,6 +72,5 @@ TW_NO_USB_STORAGE := true
 TW_NO_REBOOT_BOOTLOADER := true
 TW_HAS_DOWNLOAD_MODE := true
 RECOVERY_GRAPHICS_FORCE_USE_LINELENGTH := true
-#TW_INCLUDE_CRYPTO := true
-# Версия/мантейнер
+# TW_INCLUDE_CRYPTO := true
 TW_DEVICE_VERSION := SM-T561 by SK
