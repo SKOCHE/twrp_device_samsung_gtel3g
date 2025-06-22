@@ -194,36 +194,22 @@ jobs:
       with:
           swap-size-gb: 16
 
-    - name: 🚀 Start Building Recovery Image
+    - name: Building recovery
       run: |
-          source build/envsetup.sh
-          export ALLOW_MISSING_DEPENDENCIES=true
-          lunch "${{ github.event.inputs.MAKEFILE_NAME }}-eng"
-          make clean
-          make "${{ github.event.inputs.BUILD_TARGET }}image" -j$(nproc --all)
-      working-directory: workspace
+        source build/envsetup.sh
+        export ALLOW_MISSING_DEPENDENCIES=true
+        lunch ${{ github.event.inputs.MAKEFILE_NAME }}-eng && make clean && make ${{ github.event.inputs.BUILD_TARGET }}image -j$(nproc --all)
+      working-directory: ${{ steps.pwd.outputs.workspace-folder }}
 
-    # 📊 Список всех файлов после сборки
-    - name: 📊 List All Workspace Content After Build
-      run: |
-        find workspace -type f -print
-
-    - name: 📊 Verify Output File Exists
-      run: |
-        if [ ! -f "workspace/out/target/product/${{ github.event.inputs.DEVICE_NAME }}/${{ github.event.inputs.BUILD_TARGET }}.img" ]; then
-          echo "❌ Error: output file '${{ github.event.inputs.BUILD_TARGET }}.img' was not found."
-          exit 1
-        fi
-
-    - name: 📈 Upload to Release
+    - name: Upload to Release
       uses: softprops/action-gh-release@v1
       with:
-          files: workspace/out/target/product/${{ github.event.inputs.DEVICE_NAME }}/${{ github.event.inputs.BUILD_TARGET }}.img
-          name: ${{ github.event.inputs.DEVICE_NAME }}-${{ github.run_id }}
-          tag_name: ${{ github.run_id }}
-          body: |
-            Manifest: ${{ github.event.inputs.MANIFEST_BRANCH }}
-            Device: ${{ github.event.inputs.DEVICE_NAME }}
-            Target: ${{ github.event.inputs.BUILD_TARGET }}.img
+        files: workspace/out/target/product/${{ github.event.inputs.DEVICE_NAME }}/${{ github.event.inputs.BUILD_TARGET }}.img
+        name: ${{ github.event.inputs.DEVICE_NAME }}-${{ github.run_id }}
+        tag_name: ${{ github.run_id }}
+        body: |
+          Manifest: ${{ github.event.inputs.MANIFEST_BRANCH }}
+          Device: ${{ github.event.inputs.DEVICE_NAME }}
+          Target: ${{ github.event.inputs.BUILD_TARGET }}.img
       env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
