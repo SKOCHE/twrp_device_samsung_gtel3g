@@ -14,7 +14,7 @@ on:
       DEVICE_TREE_URL:
         description: '📱 DEVICE_TREE_URL'
         required: true
-        default: 'https://github.com/SKOCHE/android_device_samsung_gtel3g'
+        default: 'https://github.com/SKOCHE/twrp_device_samsung_gtel3g'
       DEVICE_TREE_BRANCH:
         description: '🎛️ DEVICE_TREE_BRANCH'
         required: true
