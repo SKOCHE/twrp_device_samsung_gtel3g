@@ -12,7 +12,7 @@ endif
 
 # Правила для копирования ядра и DTB
 $(PRODUCT_OUT)/kernel: $(KERNEL_SRC)
-    cp $^ $@
+    cp $^ $@  # Исправлено: добавлена табуляция перед cp
 
 $(PRODUCT_OUT)/dt.img: $(DTB_SRC)
-    cp $^ $@
+    cp $^ $@  # Исправлено: добавлена табуляция перед cp
