@@ -1,10 +1,11 @@
+# 🔧 Recovery Build Workflow
 name: 🔧 Recovery Build
 
 on:
   workflow_dispatch:
     inputs:
       MANIFEST_URL:
-        description: '🌍 MANIFEST_URL (if want to use SSH keys, use git@github.com:XXXXX)'
+        description: '🌍 MANIFEST_URL (если хотите использовать SSH ключи, используйте git@github.com:XXXXX)'
         required: true
         default: 'https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp'
       MANIFEST_BRANCH:
@@ -24,10 +25,10 @@ on:
         required: true
         default: 'device/samsung/gtel3g'
       COMMON_TREE_URL:
-        description: '📜 COMMON_TREE_URL (if no common tree, leave blank)'
+        description: '📜 COMMON_TREE_URL (если нет общего дерева, оставьте поле пустым)'
         required: false  
       COMMON_PATH:
-        description: '🗃️ COMMON_PATH (if no common tree, leave blank)'
+        description: '🗃️ COMMON_PATH (если нет общего дерева, оставьте поле пустым)'
         required: false 
       DEVICE_NAME:
         description: '💻 DEVICE_NAME'
@@ -199,7 +200,7 @@ jobs:
         source build/envsetup.sh
         export ALLOW_MISSING_DEPENDENCIES=true
         lunch ${{ github.event.inputs.MAKEFILE_NAME }}-eng && make clean && make ${{ github.event.inputs.BUILD_TARGET }}image -j$(nproc --all)
-      working-directory: ${{ steps.pwd.outputs.workspace-folder }}
+      working-directory: ${{ steps.init.outputs.workspace-folder }}
 
     - name: Upload to Release
       uses: softprops/action-gh-release@v1
