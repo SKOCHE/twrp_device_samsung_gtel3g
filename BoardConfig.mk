@@ -32,14 +32,9 @@ BOARD_KERNEL_SEPARATED_DT :=
 TARGET_KERNEL_CONFIG := gtel3g_defconfig
 TARGET_KERNEL_SOURCE := kernel/samsung/gtel3g
 
-# Kernel - prebuilt
-TARGET_FORCE_PREBUILT_KERNEL := true
-ifeq ($(TARGET_FORCE_PREBUILT_KERNEL),true)
-TARGET_PREBUILT_KERNEL := $(DEVICE_PATH)/prebuilt/kernel
-TARGET_PREBUILT_DT := $(DEVICE_PATH)/prebuilt/dt.img
-BOARD_MKBOOTIMG_ARGS += --dt $(TARGET_PREBUILT_DT)
-BOARD_KERNEL_SEPARATED_DT := 
-endif
+# Передача предкомпилированных файлов ядра и DTB
+TARGET_PREBUILT_KERNEL := $(LOCAL_PATH)/prebuilt/kernel
+BOARD_PREBUILT_DT_IMAGE := $(LOCAL_PATH)/prebuilt/dt.img
 
 # Используемые предкомпилированные ресурсы
 TARGET_IGNORE_PREBUILT_KERNEL_CHECKSUM := true
