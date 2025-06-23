@@ -1,14 +1,12 @@
 DEVICE_PATH := device/samsung/gtel3g
 
 # Архитектура
-TARGET_ARCH := armeabi-v7a
-TARGET_ARCH_VARIANT := generic
+TARGET_ARCH := arm
+TARGET_ARCH_VARIANT := armv7-a-neon
 TARGET_CPU_ABI := armeabi-v7a
-TARGET_CPU_ABI2 := 
+TARGET_CPU_ABI2 := armeabi
 TARGET_CPU_VARIANT := generic
 TARGET_CPU_VARIANT_RUNTIME := generic
-TARGET_CPU_SMP := true
-ARCH_ARM_HAVE_TLS_REGISTER := true
 
 # Загрузчик
 TARGET_BOOTLOADER_BOARD_NAME := sc8830
