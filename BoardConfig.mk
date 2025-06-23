@@ -1,24 +1,4 @@
-# Copyright (C) 2020 The Android Open Source Project
-# Copyright (C) 2021-2022 TeamWin Recovery Project
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#      http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
-# Путь к устройству
 DEVICE_PATH := device/samsung/gtel3g
-
-# Передача предкомпилированных файлов ядра и DTB
-TARGET_PREBUILT_KERNEL := $(LOCAL_PATH)/prebuilt/kernel
-BOARD_PREBUILT_DT_IMAGE := $(LOCAL_PATH)/prebuilt/dt.img
 
 # Архитектура
 TARGET_ARCH := arm
@@ -39,22 +19,48 @@ TARGET_BOARD_PLATFORM := sc8830
 # Утверждение OTA обновления
 TARGET_OTA_ASSERT_DEVICE := SM-T561,SM-T560,gtel3g,gtelwifi,gtel3gxx,gtelwifixx,smt561,smt560
 
+# Kernel
+BOARD_KERNEL_BASE := 0x00000000
+BOARD_KERNEL_CMDLINE := console=ttyS1,115200n8
+BOARD_KERNEL_PAGESIZE := 2048
+BOARD_KERNEL_OFFSET = 0x00008000
+BOARD_RAMDISK_OFFSET := 0x01000000
+BOARD_KERNEL_TAGS_OFFSET := 0x00000100
+BOARD_MKBOOTIMG_ARGS := --kernel_offset $(BOARD_KERNEL_OFFSET) --ramdisk_offset $(BOARD_RAMDISK_OFFSET) --tags_offset $(BOARD_TAGS_OFFSET)
+BOARD_KERNEL_IMAGE_NAME := Image
+BOARD_KERNEL_SEPARATED_DT := true
+TARGET_KERNEL_CONFIG := gtel3g_defconfig
+TARGET_KERNEL_SOURCE := kernel/samsung/gtel3g
+
+# Kernel - prebuilt
+TARGET_FORCE_PREBUILT_KERNEL := true
+ifeq ($(TARGET_FORCE_PREBUILT_KERNEL),true)
+TARGET_PREBUILT_KERNEL := $(DEVICE_PATH)/prebuilt/kernel
+TARGET_PREBUILT_DT := $(DEVICE_PATH)/prebuilt/dt.img
+BOARD_MKBOOTIMG_ARGS += --dt $(TARGET_PREBUILT_DT)
+BOARD_KERNEL_SEPARATED_DT := 
+endif
+
 # Используемые предкомпилированные ресурсы
 TARGET_IGNORE_PREBUILT_KERNEL_CHECKSUM := true
 BOARD_KERNEL_SEPARATED_DT := true
 TARGET_BUILD_KERNEL_WITHOUT_KERNEL_CONFIG := true
 INTERNAL_KERNEL_CLEANING := true
 
-# Размер блока Flash
+# Размеры разделов
+BOARD_BOOTIMAGE_PARTITION_SIZE := 0x105c0000
+BOARD_RECOVERYIMAGE_PARTITION_SIZE := 0x105c0000
+BOARD_SYSTEMIMAGE_PARTITION_SIZE := 0x105c0000
+BOARD_USERDATAIMAGE_PARTITION_SIZE := 0x105c0000
 BOARD_FLASH_BLOCK_SIZE := 131072
 
-# Конфигурация RAMdisk и Recovery
+# Recovery
 BOARD_HAS_LARGE_FILESYSTEM := true
 TARGET_RECOVERY_PIXEL_FORMAT := RGBX_8888
 TARGET_USERIMAGES_USE_EXT4 := true
 TARGET_USERIMAGES_USE_F2FS := true
 
-# Специфические флаги TWRP
+# Специфичные флаги TWRP
 BOARD_USE_CUSTOM_RECOVERY_FONT := roboto_10x18.h
 RECOVERY_GRAPHICS_USE_LINELENGTH := true
 RECOVERY_SDCARD_ON_DATA := true
@@ -88,9 +94,5 @@ TW_NO_USB_STORAGE := true
 TW_NO_REBOOT_BOOTLOADER := true
 TW_HAS_DOWNLOAD_MODE := true
 RECOVERY_GRAPHICS_FORCE_USE_LINELENGTH := true
-
-# Шифрование (раскомментируйте, если ваше устройство поддерживает шифрование)
-# TW_INCLUDE_CRYPTO := true
-
-# Версия устройства
+# Версия/мантейнер
 TW_DEVICE_VERSION := SM-T561 by SK
