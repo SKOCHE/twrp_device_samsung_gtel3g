@@ -32,8 +32,8 @@ TARGET_KERNEL_CONFIG := gtel3g_defconfig
 TARGET_KERNEL_SOURCE := kernel/samsung/gtel3g
 
 # Передача предкомпилированных файлов ядра и DTB
-TARGET_PREBUILT_KERNEL := $(LOCAL_PATH)/prebuilt/kernel
-BOARD_PREBUILT_DT_IMAGE := $(LOCAL_PATH)/prebuilt/dt.img
+TARGET_PREBUILT_KERNEL := prebuilt/kernel
+BOARD_PREBUILT_DT_IMAGE := prebuilt/dt.img
 
 # Размеры разделов
 BOARD_BOOTIMAGE_PARTITION_SIZE := 0x105c0000
