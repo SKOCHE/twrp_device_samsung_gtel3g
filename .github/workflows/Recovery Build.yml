@@ -10,7 +10,7 @@ on:
       MANIFEST_BRANCH:
         description: '⚙️ MANIFEST_BRANCH'
         required: true
-        default: 'twrp-12.1'
+        default: 'twrp-10.0'
       DEVICE_TREE_URL:
         description: '📱 DEVICE_TREE_URL'
         required: true
