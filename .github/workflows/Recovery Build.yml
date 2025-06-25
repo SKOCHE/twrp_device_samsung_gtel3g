@@ -6,7 +6,7 @@ on:
       MANIFEST_URL:
         description: '🌍 MANIFEST_URL (если хотите использовать SSH ключи, используйте git@github.com:XXXXX)'
         required: true
-        default: 'https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp'
+        default: 'https://github.com/minimal-manifest-twrp/platform_manifest_twrp_omni.git -b twrp-10.0-deprecated'
       MANIFEST_BRANCH:
         description: '⚙️ MANIFEST_BRANCH'
         required: true
