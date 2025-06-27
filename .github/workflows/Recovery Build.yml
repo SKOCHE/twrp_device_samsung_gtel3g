@@ -6,11 +6,11 @@ on:
       MANIFEST_URL:
         description: '🌍 MANIFEST_URL (если хотите использовать SSH ключи, используйте git@github.com:XXXXX)'
         required: true
-        default: 'https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git -b twrp-12.1'
+        default: 'https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git -b twrp-11.0'
       MANIFEST_BRANCH:
         description: '⚙️ MANIFEST_BRANCH'
         required: true
-        default: 'twrp-12.1'
+        default: 'twrp-11.0'
       DEVICE_TREE_URL:
         description: '📱 DEVICE_TREE_URL'
         required: true
